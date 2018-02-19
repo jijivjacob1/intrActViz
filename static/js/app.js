@@ -27,7 +27,7 @@ function initMetaDataSection(sample){
         for (var i = 0; i < fields.length ; i++) {
             var $row = $tbody.insertRow(i);
             var $cell = $row.insertCell(0);
-            $cell.innerText = "" + fields[i] + ":" + response[0][fields[i]];
+            $cell.innerText = "" + fields[i] + ": " + response[0][fields[i]];
         }
     
     });

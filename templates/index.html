@@ -12,17 +12,22 @@
         <div class="container">
             <h1>Belly Button Biodiversity</h1>
             <h1>Dashboard</h1>
+            <p>Use the interactive charts below to explore the datasets</p>
         </div>
     </div>
     <div class="container">
         <div class="row">
            
-            <div class="col-lg-2 form-group" >
-                 <select id="selDataset" onchange="optionChanged(this.value)">
+            <div class="col-lg-3 form-group" >
+                <div style = " margin-top : 90px;">
+                <b >SELECT Sample</b>
+                </BR>
+                 <select id="selDataset" onchange="optionChanged(this.value)" style = " margin-top : 10px;">
             
                 </select>
+                </div>
 
-                <div class="panel panel-default">
+                <div class="panel panel-primary" style = " margin-top : 30px;">
                     <div class="panel-heading">
                       <h3 class="panel-title">Sample MetaData</h3>
                     </div>
@@ -36,7 +41,7 @@
             <div class="col-lg-5 form-group" >
                 <div id="pie-plot"></div>
            </div>
-           <div class="col-lg-5 form-group" >
+           <div class="col-lg-4 form-group" >
             <div id="plot2"></div>
        
            
