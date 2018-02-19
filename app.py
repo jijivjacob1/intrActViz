@@ -1,6 +1,7 @@
 
 # import necessary libraries
 import pandas as pd
+import numpy as np
 
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
@@ -28,6 +29,8 @@ inspector = inspect(engine)
 
 # Save references to the stations and measurements tables
 samples_metadata = Base.classes.samples_metadata
+samples_table = Base.classes.samples
+otu_table = Base.classes.otu
 
 # Create our session (link) from Python to the DB
 session = Session(engine)
@@ -38,13 +41,17 @@ session = Session(engine)
 app = Flask(__name__)
 
 # Query the database and send the jsonified results
-@app.route("/data")
-def data():
-    sel = [func.strftime("%Y", Bigfoot.timestamp), func.count(Bigfoot.timestamp)]
-    results = session.query(*sel).\
-        group_by(func.strftime("%Y", Bigfoot.timestamp)).all()
-    df = pd.DataFrame(results, columns=['months', 'sightings'])
-    return jsonify(df.to_dict(orient="records"))
+@app.route("/samples/<sample>")
+def samples(sample):
+    sample_column = 'samples.' + sample
+    sel = [ samples_table.otu_id,sample_column]
+    results = session.query(*sel).all()
+    df = pd.DataFrame(results, columns=['otu_ids', 'sample_values'])
+    df = df.sort_values('sample_values', ascending=False)
+    df_otu_list = df['otu_ids'].tolist()
+    df_sample_list = df['sample_values'].tolist()
+    sample_dict = {"otu_ids" : df_otu_list,"sample_values" : df_sample_list}
+    return jsonify(sample_dict)
 
 @app.route("/names")
 def names():
@@ -69,6 +76,30 @@ def metadata(sample):
 
 
     return jsonify(df.to_dict(orient="records"))
+
+@app.route('/otu')
+def otu():
+
+
+    results = session.query(otu_table.lowest_taxonomic_unit_found).all()          
+
+    # df = pd.DataFrame(results, columns=['desc'])
+    all_otu = list(np.ravel(results))
+
+    return jsonify(all_otu)
+
+@app.route('/wfreq/<sample>')
+def wfreq(sample):
+
+
+    results = session.query(samples_metadata.WFREQ).\
+             filter(samples_metadata.SAMPLEID == sample[3:]).all()
+
+    # df = pd.DataFrame(results, columns=['WFREQ'])
+
+
+    return jsonify(results[0])
+
 
 # create route that renders index.html template
 @app.route("/")
